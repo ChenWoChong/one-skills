@@ -34,6 +34,12 @@ skill-name/
 make new-skill NAME=my-skill
 ```
 
+列出当前项目下所有 skills：
+
+```bash
+make list-skills
+```
+
 校验所有 skills：
 
 ```bash
@@ -46,6 +52,10 @@ make validate
 make link-to-codex
 ```
 
-## 当前技能
+## 查看技能
 
-- `linus-go-cleanup`：用强硬、务实、贴近生产流程的风格审查并简化 Go 代码。
+当前技能列表由 `skills/*/SKILL.md` 动态生成：
+
+```bash
+make list-skills
+```

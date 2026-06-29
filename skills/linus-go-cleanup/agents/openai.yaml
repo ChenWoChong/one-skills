@@ -1,4 +1,4 @@
 interface:
   display_name: "Linus Go Cleanup"
-  short_description: "按 Linus 品味清理 Go PR 里的防御式噪音"
-  default_prompt: "使用 $linus-go-cleanup 帮我在提交前审查并简化这个 Go PR。"
+  short_description: "严格守门 Go PR，删除冗余并降低复杂度"
+  default_prompt: "使用 $linus-go-cleanup 帮我在提交前严格审查、简化并清理这个 Go PR。"

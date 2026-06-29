@@ -1,0 +1,4 @@
+interface:
+  display_name: "__DISPLAY_NAME__"
+  short_description: "一句话说明这个 skill 的用途"
+  default_prompt: "使用 $__SKILL_NAME__ 帮我处理这个任务。"

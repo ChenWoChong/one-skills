@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+  echo "用法：scripts/new-skill <skill-name>" >&2
+  exit 2
+fi
+
+name="$1"
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+target="$repo_root/skills/$name"
+display_name="${name//-/ }"
+
+if [[ ! "$name" =~ ^[a-z0-9-]+$ ]]; then
+  echo "skill 名称只能使用小写字母、数字和短横线" >&2
+  exit 2
+fi
+
+if [[ -e "$target" ]]; then
+  echo "skill 已存在：$target" >&2
+  exit 1
+fi
+
+mkdir -p "$target/agents"
+sed "s/__SKILL_NAME__/$name/g; s/__DISPLAY_NAME__/$display_name/g" "$repo_root/templates/skill-template/SKILL.md" > "$target/SKILL.md"
+sed "s/__SKILL_NAME__/$name/g; s/__DISPLAY_NAME__/$display_name/g" "$repo_root/templates/skill-template/agents/openai.yaml" > "$target/agents/openai.yaml"
+
+echo "已创建：$target"

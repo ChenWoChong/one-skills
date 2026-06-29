@@ -2,27 +2,32 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-codex_skills_dir="${CODEX_HOME:-$HOME/.codex}/skills"
+skill_dirs=(
+  "$HOME/.agents/skills"
+  "${CODEX_HOME:-$HOME/.codex}/skills"
+)
 
-mkdir -p "$codex_skills_dir"
+link_skill() {
+  local skill_dir="$1"
+  local target_dir="$2"
+  local name link current
 
-shopt -s nullglob
-for skill_dir in "$repo_root"/skills/*; do
-  [[ -d "$skill_dir" ]] || continue
   name="$(basename "$skill_dir")"
-  link="$codex_skills_dir/$name"
+  link="$target_dir/$name"
+
+  mkdir -p "$target_dir"
 
   if [[ -L "$link" ]]; then
     current="$(readlink "$link")"
     if [[ "$current" == "$skill_dir" ]]; then
-      echo "已链接：$name"
-      continue
+      echo "已链接：$link"
+      return
     fi
     if [[ ! -e "$link" ]]; then
       rm "$link"
       ln -s "$skill_dir" "$link"
-      echo "已修复失效链接：$name"
-      continue
+      echo "已修复失效链接：$link"
+      return
     fi
     echo "拒绝替换已有软链接：$link -> $current" >&2
     exit 1
@@ -34,5 +39,13 @@ for skill_dir in "$repo_root"/skills/*; do
   fi
 
   ln -s "$skill_dir" "$link"
-  echo "已链接：$name"
+  echo "已链接：$link"
+}
+
+shopt -s nullglob
+for skill_dir in "$repo_root"/skills/*; do
+  [[ -d "$skill_dir" ]] || continue
+  for target_dir in "${skill_dirs[@]}"; do
+    link_skill "$skill_dir" "$target_dir"
+  done
 done

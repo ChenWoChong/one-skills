@@ -37,7 +37,7 @@ make new-skill NAME=my-skill
 列出当前项目下所有 skills：
 
 ```bash
-make list-skills
+make skills
 ```
 
 校验所有 skills：
@@ -57,5 +57,5 @@ make link-to-codex
 当前技能列表由 `skills/*/SKILL.md` 动态生成：
 
 ```bash
-make list-skills
+make skills
 ```

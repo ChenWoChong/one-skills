@@ -31,19 +31,19 @@ skill-name/
 创建新的 skill 骨架：
 
 ```bash
-scripts/new-skill my-skill
+make new-skill NAME=my-skill
 ```
 
 校验所有 skills：
 
 ```bash
-scripts/validate-skills
+make validate
 ```
 
 把仓库里的 skills 链接到 Codex 的本地发现目录：
 
 ```bash
-scripts/link-to-codex
+make link-to-codex
 ```
 
 ## 当前技能

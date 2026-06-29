@@ -7,4 +7,6 @@
 - 每个 skill 必须是自包含目录，放在 `skills/<skill-name>/` 下。
 - 每个 skill 只要求包含 `SKILL.md`；只有确实需要时才添加 `scripts/`、`references/`、`assets/`。
 - 不要在单个 skill 内添加 README、安装指南、更新日志等额外说明文件，除非 Codex 执行该 skill 时确实需要读取。
-- 修改后运行 `scripts/validate-skills`。
+- 每次新增、删除或修改 `scripts/` 下的脚本时，必须同步维护 `Makefile`，确保常用脚本都有对应的 `make` 入口。
+- `Makefile` 的可公开入口必须使用 `target: ## 中文说明` 格式写注释，让 `make help` 自动解析，不要在 `help` 目标里硬编码命令列表。
+- 修改后运行 `make validate`。

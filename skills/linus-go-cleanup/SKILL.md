@@ -207,6 +207,38 @@ detach(id)
 
 如果一个字段只是为了让另一个对象调用真正拥有者的方法，就删掉这个字段，把调用挪回拥有者，或者把依赖作为局部参数沿调用链传递。
 
+### 生命周期入口要统一
+
+同一个业务生命周期只能有一个清晰主入口。不要同时保留 `closeX`、`reapX`、`finalizeX`、`detachX` 几个互相绕的入口，让调用方猜应该走哪条路径。
+
+先判断真实语义：
+
+- 断开连接只是 transport 生命周期，不等于关闭业务 session。
+- 关闭 session 才是业务生命周期结束，应该负责 release 外部资源、写关闭状态、再清理内存索引。
+- 后台 reaper、主动 close、异常回滚如果最终语义都是“关闭 session”，就应该调用同一个 `CloseSession(id, closedAt)` 入口。
+
+坏味道：
+
+```go
+func closeSession(id SessionID) error { ... }
+func reapSession(id SessionID) error { ... }
+func finalizeSession(id SessionID) error { ... }
+```
+
+更好：
+
+```go
+func CloseSession(id SessionID, closedAt time.Time) error { ... }
+```
+
+把不同阶段拆成私有 helper 可以，但 helper 只能表达步骤，不要变成第二套业务入口。例如：
+
+- `finalizeSessions`：release claim + mark closed。
+- `detachSession`：只处理内存索引。
+- `closeConnection`：只处理 transport 断开，不假装关闭 session。
+
+涉及时间、状态变更、错误语义时，不要在函数内部偷偷取当前时间或吞掉状态差异。调用方已经知道关闭发生在什么时候，就把 `closedAt` 显式传进来；这样测试、日志和持久化语义都更清楚。
+
 ### 保持命名和数据流直接
 
 命名要让读者看到真实业务对象和状态变化，不要用泛化词掩盖职责不清。
@@ -269,6 +301,7 @@ detach(id)
 - `if/else` 调整没有为了压平嵌套而增加代码量。
 - API 层没有混入业务逻辑。
 - Lifecycle 和 Manager 的职责符合数据所有权。
+- 同一业务生命周期没有保留多套 close/reap/finalize 入口；断连接和关闭业务对象语义清楚分开。
 - 没有多个 struct 无必要地重复持有同一个依赖、状态或变量。
 - 命名没有掩盖所有权、状态变化或真实业务语义。
 - 日志记录真实状态变化，不制造噪音。

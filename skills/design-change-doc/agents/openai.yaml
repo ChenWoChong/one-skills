@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Change Doc"
+  short_description: "生成带修改前后结构和对比说明的设计变更文档"
+  default_prompt: "使用 $design-change-doc 帮我生成一份设计变更文档，讲清修改前结构、修改后结构、对比说明、兼容性和验证项。"

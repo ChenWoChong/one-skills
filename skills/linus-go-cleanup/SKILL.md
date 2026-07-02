@@ -167,6 +167,40 @@ if err != nil {
 
 不要把简单条件拆成多层 helper 来制造“扁平”。如果读者必须跳来跳去才能理解主流程，这不是简化。
 
+业务状态分支和错误处理不要伪装成同一层条件。`else if err := ...; err != nil` 只有在前后条件真的是同一组互斥判断时才用；如果 `else` 代表一个业务状态，而里面只是执行动作后的错误处理，就把错误处理放进 `else` 块里。
+
+常见场景：有旧资源就复用、恢复或更新；没有旧资源就创建。`id != ""`、`found`、`exists`、`attached` 这类判断是业务状态；`err != nil` 是动作失败结果，不是另一个并列业务状态。
+
+坏味道：
+
+```go
+if existingID == "" {
+	existingID, err = createResource()
+	if err != nil {
+		return err
+	}
+} else if err := reuseResource(existingID); err != nil {
+	return err
+}
+```
+
+更好：
+
+```go
+if existingID != "" {
+	if err := reuseResource(existingID); err != nil {
+		return err
+	}
+} else {
+	existingID, err = createResource()
+	if err != nil {
+		return err
+	}
+}
+```
+
+核心判断：`existingID != ""` 和 `existingID == ""` 是业务状态；`err != nil` 只是某个状态分支里的失败结果。不要把失败结果写成另一个业务分支，读者会误以为有两套并列状态。具体到 session 场景，`southID` 是否存在就是这类业务状态。
+
 ### 共享副作用只写一次
 
 如果 connected/orphan、success/failure、old/new 这类分支最终都会执行同一个真实副作用，就先算清分支状态，把共同副作用放到主流程里只调用一次，分支只处理差异。

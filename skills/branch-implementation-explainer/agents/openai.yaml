@@ -1,4 +1,4 @@
 interface:
   display_name: "Branch Implementation Explainer"
-  short_description: "讲清分支功能的具体实现"
-  default_prompt: "使用 $branch-implementation-explainer 帮我讲清楚这个分支为了实现功能，具体修改了哪些数据结构、主流程、关键代码和新增函数，以及为什么要这样实现。"
+  short_description: "生成分支实现讲解文档"
+  default_prompt: "使用 $branch-implementation-explainer 为这个分支生成或更新实现讲解文档，输出到 /Users/chenmoyin/Documents/impl-doc/，文档要循序渐进，重点写清楚背景、改动文件地图、核心概念、数据结构、主流程、关键代码和新增函数。"

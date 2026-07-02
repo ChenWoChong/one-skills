@@ -13,7 +13,7 @@ skills: ## 列出当前项目下所有 skills
 			/^---$$/ { fence++; next } \
 			fence == 1 && /^name:[[:space:]]*/ { name = $$0; sub(/^name:[[:space:]]*/, "", name); gsub(/^"|"$$/, "", name) } \
 			fence == 1 && /^description:[[:space:]]*/ { description = $$0; sub(/^description:[[:space:]]*/, "", description); gsub(/^"|"$$/, "", description) } \
-			END { if (name != "") printf "%-24s \033[34m%s\033[0m\n", name, description }' "$$skill_file"; \
+			END { if (name != "") printf "%-36s \033[34m%s\033[0m\n", name, description }' "$$skill_file"; \
 	done
 
 new-skill: ## 创建新的 skill 骨架，例如 make new-skill NAME=my-skill
